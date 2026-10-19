@@ -1,0 +1,49 @@
+[package]
+name = "cu-core"
+description = "Public facade of the project: the single API used by the desktop app."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cu-msg = { path = "../cu-msg", version = "0.0.0" }
+async-trait = "=0.1.92"
+cu-auth-fido2 = { path = "../cu-auth-fido2", version = "0.0.0" }
+cu-backend = { path = "../cu-backend", version = "0.0.0" }
+cu-backend-fs = { path = "../cu-backend-fs", version = "0.0.0" }
+cu-backend-s3 = { path = "../cu-backend-s3", version = "0.0.0" }
+cu-oauth = { path = "../cu-oauth", version = "0.0.0" }
+cu-backend-sftp = { path = "../cu-backend-sftp", version = "0.0.0" }
+cu-backend-gdrive = { path = "../cu-backend-gdrive", version = "0.0.0" }
+cu-backend-dropbox = { path = "../cu-backend-dropbox", version = "0.0.0" }
+cu-backend-onedrive = { path = "../cu-backend-onedrive", version = "0.0.0" }
+cu-backend-webdav = { path = "../cu-backend-webdav", version = "0.0.0" }
+cu-crypto = { path = "../cu-crypto", version = "0.0.0" }
+cu-format = { path = "../cu-format", version = "0.0.0" }
+cu-index = { path = "../cu-index", version = "0.0.0" }
+cu-jobs = { path = "../cu-jobs", version = "0.0.0" }
+cu-secrets = { path = "../cu-secrets", version = "0.0.0" }
+cu-sentinel = { path = "../cu-sentinel", version = "0.0.0" }
+cu-sync = { path = "../cu-sync", version = "0.0.0" }
+cu-vfs = { path = "../cu-vfs", version = "0.0.0" }
+data-encoding = { version = "=2.11.1", default-features = false, features = ["alloc"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+region = "=3.0.2"
+serde_json = "=1.0.151"
+tokio = { version = "=1.53.1", default-features = false, features = ["fs", "io-util", "rt", "rt-multi-thread"] }
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "1", default-features = false, features = ["std", "process"] }
+
+[target.'cfg(any(windows, target_os = "macos"))'.dependencies]
+secmem-proc = { version = "0.3", default-features = false, features = ["std"] }
+
+[target.'cfg(any(target_os = "linux", windows))'.dependencies]
+cu-mount = { path = "../cu-mount", version = "0.0.0" }
+

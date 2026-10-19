@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CryptoUpload</title>
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <symbol id="cu-i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z" /><path d="M10 20v-6h4v6" /></symbol>
+        <symbol id="cu-i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></symbol>
+        <symbol id="cu-i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4" /></symbol>
+        <symbol id="cu-i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></symbol>
+        <symbol id="cu-i-bars" viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-7" /></symbol>
+        <symbol id="cu-i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 01-.5-8A5.5 5.5 0 0117 8.5 4.5 4.5 0 0117 18z" /></symbol>
+        <symbol id="cu-i-gear" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></symbol>
+        <symbol id="cu-i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></symbol>
+        <symbol id="cu-i-sync" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0113.5-5.8L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 01-13.5 5.8L4 15.5M4 20v-4.5h4.5" /></symbol>
+        <symbol id="cu-i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.5v.01" /></symbol>
+        <symbol id="cu-i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M9 9l6 6M15 9l-6 6" /></symbol>
+        <symbol id="cu-i-more" viewBox="0 0 24 24"><path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3" /></symbol>
+        <symbol id="cu-i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="1.5" /><path d="M8 10.5V7a4 4 0 018 0v3.5" /></symbol>
+        <symbol id="cu-i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12" /></symbol>
+        <symbol id="cu-i-off" viewBox="0 0 24 24"><path d="M3 3l18 18M8.5 8.8A6 6 0 006 13a4 4 0 004 4h7M10 6.2A5.5 5.5 0 0117 8.5 4.5 4.5 0 0120 13" /></symbol>
+        <symbol id="cu-i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="1.5" /><path d="M5 15V6a1 1 0 011-1h9" /></symbol>
+        <symbol id="cu-i-down" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14" /></symbol>
+        <symbol id="cu-i-up" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19h14" /></symbol>
+        <symbol id="cu-i-history" viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8 8 8 0 00-6 2.7L4 9M4 4v5h5M12 8v4l3 2" /></symbol>
+        <symbol id="cu-i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13" /></symbol>
+        <symbol id="cu-i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" /><path d="M20 20l-4.5-4.5" /></symbol>
+        <symbol id="cu-i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+        <symbol id="cu-i-drive" viewBox="0 0 24 24"><rect x="3.5" y="13" width="17" height="6.5" rx="1.5" /><path d="M6 13l2.2-7.5h7.6L18 13M7.5 16.2h.01" /></symbol>
+        <symbol id="cu-i-mark" viewBox="0 0 200 200">
+          <path d="M156.6 43.4A80 80 0 1 0 156.6 156.6" stroke-width="20" />
+          <path d="M100 130V74M77 96l23-23 23 23" stroke-width="14" />
+        </symbol>
+      </defs>
+    </svg>
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>

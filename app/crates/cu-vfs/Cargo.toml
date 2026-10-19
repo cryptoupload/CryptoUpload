@@ -1,0 +1,21 @@
+[package]
+name = "cu-vfs"
+description = "Logical filesystem: open/read/write/readdir/rename, LRU chunk cache and readahead."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cu-msg = { path = "../cu-msg", version = "0.0.0" }
+async-trait = "=0.1.92"
+cu-backend = { path = "../cu-backend", version = "0.0.0" }
+cu-crypto = { path = "../cu-crypto", version = "0.0.0" }
+cu-format = { path = "../cu-format", version = "0.0.0" }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+tokio = { version = "=1.53.1", default-features = false, features = ["io-util"] }
+

@@ -1,0 +1,70 @@
+CryptoUpload App Store GPL Exception
+=====================================
+
+Copyright (C) 2026 CryptoUpload
+
+This exception is an additional permission under section 7 of the GNU General
+Public License, version 3 ("GPLv3"). It applies to CryptoUpload and to any
+work based on CryptoUpload that is licensed under GPLv3 or any later version
+("the Program").
+
+Definition
+----------
+
+"App Store" means a distribution platform that requires, as a condition of
+listing or distributing an application, that the application (or the
+recipient's use of it) be subject to additional terms imposed by the
+platform operator — including but not limited to the Apple App Store, the
+Google Play Store, and the Microsoft Store — where those additional terms
+would otherwise be incompatible with, or restrict rights granted by, GPLv3.
+
+The permission
+---------------
+
+As a special exception to GPLv3, the copyright holder(s) of the Program
+grant you the additional permission to convey a covered work through an App
+Store, and to accept and be bound by that App Store's additional terms as a
+condition of that specific act of conveyance, even where those additional
+terms would otherwise conflict with or restrict the rights granted to
+downstream recipients by GPLv3 — **provided that all of the following
+conditions are met:**
+
+1. The complete corresponding source code of the exact version of the
+   Program you convey through the App Store remains publicly available,
+   free of charge, under the terms of GPLv3 (plus this exception), from a
+   location reasonably accessible to anyone who obtains the binary from the
+   App Store (for example, the project's public source repository).
+
+2. You do not remove, alter, or obscure this exception notice, the GPLv3
+   license text, or any copyright notice in the Program.
+
+3. Any modified version of the Program that you convey through an App Store
+   is itself made available in source form under GPLv3 (plus this
+   exception), consistent with GPLv3 section 5.
+
+4. This exception grants permission only for the act of conveying the
+   Program through an App Store under that store's required terms. It does
+   not otherwise limit, waive, or modify any right or obligation that GPLv3
+   grants or imposes on you or on any other recipient, including outside the
+   context of App Store distribution.
+
+If any of the above conditions is not met, this exception does not apply to
+that act of conveyance, and the Program may be conveyed through that channel
+only if doing so otherwise complies with GPLv3 on its own terms.
+
+This exception is a permission, not an obligation: nobody is required to
+take advantage of it, and you remain free to convey the Program under
+GPLv3 alone, without relying on this exception.
+
+Why this exists
+----------------
+
+App Store terms of service (device attestation, DRM interoperability
+requirements, resale/redistribution restrictions, etc.) can be read as
+conflicting with rights GPLv3 guarantees to downstream recipients. Without
+this exception, publishing an official CryptoUpload build on an App Store
+could be read as a breach of GPLv3 by the store's own terms, even though the
+corresponding source remains fully available under GPLv3. This exception
+resolves that conflict for App Store distribution specifically, without
+weakening copyleft anywhere else: modified versions must still be shared
+under GPLv3, and the source of what's on the App Store must still be public.

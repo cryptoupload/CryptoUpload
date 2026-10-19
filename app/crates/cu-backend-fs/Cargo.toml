@@ -1,0 +1,17 @@
+[package]
+name = "cu-backend-fs"
+description = "StorageBackend on the local filesystem."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait = "=0.1.92"
+cu-backend = { path = "../cu-backend", version = "0.0.0" }
+tokio = { version = "=1.53.1", default-features = false, features = ["fs", "io-util"] }
+

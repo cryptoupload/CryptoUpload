@@ -1,0 +1,38 @@
+[package]
+name = "cu-secrets"
+description = "Credentials: system keychain with an encrypted-file fallback."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cu-msg = { path = "../cu-msg", version = "0.0.0" }
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+cu-crypto = { path = "../cu-crypto", version = "0.0.0" }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.151" }
+keyring = { version = "=3.6.3", default-features = false, features = [
+    "async-secret-service",
+    "tokio",
+    "apple-native",
+    "windows-native",
+] }
+[target.'cfg(any(target_os = "linux", target_os = "freebsd", target_os = "openbsd"))'.dependencies]
+secret-service = { version = "4", default-features = false, features = [
+    "rt-tokio-crypto-rust",
+] }
+
+[target.'cfg(windows)'.dependencies]
+windows-acl = "0.3"
+winapi = { version = "0.3", features = ["winnt"] }
+windows = { version = "0.61", default-features = false, features = [
+    "Security_Credentials_UI",
+] }
+
+[package.metadata.cargo-shear]
+ignored = ["secret-service"]

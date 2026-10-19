@@ -1,0 +1,56 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/cu-msg",
+    "crates/cu-crypto",
+    "crates/cu-format",
+    "crates/cu-backend",
+    "crates/cu-oauth",
+    "crates/cu-backend-fs",
+    "crates/cu-backend-s3",
+    "crates/cu-backend-gdrive",
+    "crates/cu-backend-dropbox",
+    "crates/cu-backend-onedrive",
+    "crates/cu-backend-sftp",
+    "crates/cu-backend-webdav",
+    "crates/cu-auth-fido2",
+    "crates/cu-vfs",
+    "crates/cu-index",
+    "crates/cu-sync",
+    "crates/cu-jobs",
+    "crates/cu-secrets",
+    "crates/cu-sentinel",
+    "crates/cu-core",
+    "crates/cu-mount",
+    "apps/desktop/src-tauri",
+    "xtask",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.89"
+license = "GPL-3.0-or-later"
+publish = false
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+assert_is_empty = "allow"
+
+[profile.release]
+panic = "unwind"
+lto = "thin"
+codegen-units = 4
+strip = "symbols"
+
+[profile.release-checked]
+inherits = "release"
+overflow-checks = true
+lto = false
+strip = false

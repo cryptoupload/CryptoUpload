@@ -1,0 +1,29 @@
+[package]
+name = "cu-crypto"
+description = "Cryptographic primitives: Argon2id, HKDF, AES-256-GCM, AES-SIV, BIP39. No I/O, no async."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cu-msg = { path = "../cu-msg", version = "0.0.0" }
+aes-gcm = { version = "=0.10.3", default-features = false, features = ["aes", "alloc"] }
+aes-kw = { version = "=0.2.1", default-features = false, features = ["alloc"] }
+aes-siv = { version = "=0.7.0", default-features = false, features = ["alloc"] }
+argon2 = { version = "=0.6.0", default-features = false, features = ["alloc", "parallel"] }
+hkdf = { version = "=0.12.4", default-features = false }
+hmac = { version = "=0.12.1", default-features = false }
+sha2 = { version = "=0.10.9", default-features = false }
+pbkdf2 = { version = "=0.12.2", default-features = false, features = ["hmac"] }
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+subtle = { version = "2", default-features = false }
+getrandom = { version = "0.2", default-features = false, features = ["std"] }
+blake3 = { version = "=1.8.2", default-features = false, features = ["std"] }
+bip39 = { version = "=2.2.2", default-features = false, features = ["alloc", "zeroize"] }
+x25519-dalek = { version = "=2.0.1", default-features = false, features = ["static_secrets", "zeroize"] }
+

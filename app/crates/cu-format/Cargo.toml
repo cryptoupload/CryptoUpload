@@ -1,0 +1,21 @@
+[package]
+name = "cu-format"
+description = "UVF vault format: vault.uvf (JWE), file headers, chunk codec, SIV names, directory-ID indirection."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cu-msg = { path = "../cu-msg", version = "0.0.0" }
+cu-crypto = { path = "../cu-crypto", version = "0.0.0" }
+data-encoding = { version = "=2.11.1", default-features = false, features = ["alloc"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.151" }
+unicode-normalization = { version = "=0.1.25", default-features = false }
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+

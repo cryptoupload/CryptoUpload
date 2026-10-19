@@ -1,0 +1,17 @@
+/app/target/
+**/*.rs.bk
+
+.idea/
+**/.vscode/*
+!**/.vscode/extensions.json
+*.swp
+
+.DS_Store
+Thumbs.db
+
+.env
+*.pem
+*.key
+
+
+/.svelte-kit/

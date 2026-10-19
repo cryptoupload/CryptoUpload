@@ -1,0 +1,16 @@
+[package]
+name = "cu-auth-fido2"
+description = "Vault unlock with a FIDO2 security key (CTAP2, hmac-secret extension)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cu-msg = { path = "../cu-msg", version = "0.0.0" }
+ctap-hid-fido2 = "=3.6.0"
+
