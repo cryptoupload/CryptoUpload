@@ -1,0 +1,51 @@
+name: Download counts
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  counts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Write the download counts into the release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for tag in $(gh release list --exclude-drafts --limit 100 --json tagName --jq '.[].tagName'); do
+            gh release view "$tag" --json body,assets > release.json
+            python3 - <<'EOF'
+          import json
+          import re
+
+          release = json.load(open("release.json"))
+          counts = {a["name"]: a["downloadCount"] for a in release["assets"]}
+          lines = release["body"].replace("\r\n", "\n").split("\n")
+          out = []
+          for line in lines:
+              cells = line.split("|")
+              name = re.search(r"\[`([^`]+)`\]", cells[2]) if len(cells) == 5 else None
+              if name and name.group(1) in counts:
+                  cells[3] = f" {counts[name.group(1)]:,} "
+                  line = "|".join(cells)
+              out.append(line)
+          body = "\n".join(out)
+          open("body.md", "w").write(body)
+          open("changed", "w").write("1" if body != "\n".join(lines) else "0")
+          EOF
+            if [ "$(cat changed)" = 1 ]; then
+              gh release edit "$tag" --notes-file body.md > /dev/null
+              echo "$tag: updated"
+            else
+              echo "$tag: unchanged"
+            fi
+          done

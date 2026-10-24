@@ -38,10 +38,6 @@ On Windows, in PowerShell:
 minisign -V -P RWTt1I9t8dl/wTIsTZ/5C67P1M+ovIJbJfS1drkJRVnbYXplgUPLRQvb -m CryptoUpload_0.1.0-beta.2_x64-setup.exe -x file.minisig
 ```
 
-The copies without the version in their name (`CryptoUpload-windows-setup.exe`,
-`CryptoUpload-linux-amd64.deb`, `CryptoUpload-linux-amd64.AppImage`) are the same files: check them
-with the `.sig` of the copy with the version.
-
 `Signature and comment signature verified` means the file is exactly the one the project
 published. Any other result: do not install it, and report it to security@cryptoupload.org.
 

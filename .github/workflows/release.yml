@@ -224,9 +224,6 @@ jobs:
           BASE_URL="https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}"
           cd out
 
-          cp "CryptoUpload_${VERSION}_x64-setup.exe" CryptoUpload-windows-setup.exe
-          cp "CryptoUpload_${VERSION}_amd64.deb" CryptoUpload-linux-amd64.deb
-          cp "CryptoUpload_${VERSION}_amd64.AppImage" CryptoUpload-linux-amd64.AppImage
           sha256sum CryptoUpload*.exe CryptoUpload*.deb CryptoUpload*.AppImage > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
@@ -259,7 +256,27 @@ jobs:
           set -euo pipefail
           TAG="${RELEASE_TAG}"
           [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "::error::'$TAG' is not a version tag"; exit 1; }
-          NOTES=$'See [CHANGELOG.md](https://github.com/cryptoupload/CryptoUpload/blob/main/CHANGELOG.md) for details.\n\nEach installer has a `.sig` signature next to it; [SECURITY.md](https://github.com/cryptoupload/CryptoUpload/blob/main/SECURITY.md#check-a-download) explains how to check it.\n\n> ⚠️ **Unsigned beta:** on Windows, SmartScreen warns on first launch — click "More info → Run anyway".'
+          VERSION="${TAG#v}"
+          EXE="CryptoUpload_${VERSION}_x64-setup.exe"
+          DEB="CryptoUpload_${VERSION}_amd64.deb"
+          APPIMAGE="CryptoUpload_${VERSION}_amd64.AppImage"
+          NOTES=$(cat <<EOF
+
+          | Your computer | File to download | Downloads (updated hourly) |
+          |---|---|---|
+          | Windows 10 or 11 | [\`${EXE}\`](https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}/${EXE}) | — |
+          | Ubuntu, Debian, Linux Mint | [\`${DEB}\`](https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}/${DEB}) | — |
+          | Any other Linux | [\`${APPIMAGE}\`](https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}/${APPIMAGE}) | — |
+
+          You need only one file. The others are not installers: each \`.sig\` and \`SHA256SUMS.txt\` let
+          you check that a download is genuine ([SECURITY.md](https://github.com/cryptoupload/CryptoUpload/blob/main/SECURITY.md#check-a-download)),
+          \`latest.json\` is read by the app to find updates, and "Source code" is the program's source.
+
+          > ⚠️ **Unsigned beta:** on Windows, SmartScreen warns on first launch — click "More info → Run anyway".
+
+          What changed: [CHANGELOG.md](https://github.com/cryptoupload/CryptoUpload/blob/main/CHANGELOG.md).
+          EOF
+          )
           if gh release view "$TAG" > /dev/null 2>&1; then
             [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = true ] || { echo "::error::release $TAG is already published"; exit 1; }
           else
@@ -270,5 +287,4 @@ jobs:
             CryptoUpload_*_x64-setup.exe CryptoUpload_*_x64-setup.exe.sig \
             CryptoUpload_*_amd64.deb CryptoUpload_*_amd64.deb.sig \
             CryptoUpload_*_amd64.AppImage CryptoUpload_*_amd64.AppImage.sig \
-            CryptoUpload-windows-setup.exe CryptoUpload-linux-amd64.deb CryptoUpload-linux-amd64.AppImage \
             SHA256SUMS.txt latest.json
