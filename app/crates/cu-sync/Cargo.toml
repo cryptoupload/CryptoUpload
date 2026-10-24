@@ -20,7 +20,7 @@ cu-index = { path = "../cu-index", version = "0.0.0" }
 cu-vfs = { path = "../cu-vfs", version = "0.0.0" }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }
-tokio = { version = "=1.53.1", default-features = false, features = ["fs", "io-util", "macros", "process", "rt", "sync", "time"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["fs", "io-util", "macros", "process", "rt", "sync", "time"] }
 
 [target.'cfg(windows)'.dependencies]
 winapi-util = "=0.1.11"

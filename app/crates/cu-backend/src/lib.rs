@@ -17,7 +17,7 @@ pub use error::{BackendError, is_transient_http_status};
 pub use objpath::ObjPath;
 pub use resume::{NullResumeStore, PartRecord, ResumeRecord, ResumeStore};
 pub use retry::{
-    CircuitBreaker, Clock, RetryFailure, RetryPolicy, SystemClock, TokenBucket, jitter_seed, retry,
+    CircuitBreaker, Clock, RetryFailure, RetryPolicy, SystemClock, jitter_seed, retry,
     retry_with_hint,
 };
 pub use throttle::{RateLimiter, ThrottleBackend};

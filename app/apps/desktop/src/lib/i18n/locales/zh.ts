@@ -1426,7 +1426,7 @@ export const zh: Dict = {
 		credit: '署名（可选）',
 		contact: '你的邮箱（可选，仅在你希望得到回复时填写）',
 		native: '我是这种语言的母语使用者',
-		licence: '我同意我的修改可以按项目的许可证（GNU GPLv3）在项目中发布',
+		licence: '我同意我的修改可以按项目的许可证（GNU GPLv3 及其应用商店例外条款）在项目中发布',
 		saveFile: '保存文件',
 		writeEmail: '撰写邮件',
 		discard: '放弃我的修改',

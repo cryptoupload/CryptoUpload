@@ -197,6 +197,7 @@ pub fn run() {
             if let Some(mounted) = state.mount.blocking_lock().take() {
                 let _ = mounted.handle.unmount_forced();
             }
+            cu_core::remote::wait_for_pending_refresh_token_saves();
         }
     });
 }

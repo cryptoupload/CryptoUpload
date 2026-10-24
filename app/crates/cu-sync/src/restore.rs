@@ -81,19 +81,6 @@ pub async fn write_restored_file(
     result
 }
 
-pub async fn restore_before(
-    db: &Db,
-    vault_fs: &VaultFs,
-    config: &VaultConfig,
-    vault_path_prefix: &str,
-    node_id: NodeId,
-    at_ms: i64,
-    local_dest: &Path,
-) -> Result<(), SyncError> {
-    let source_path = resolve_restore_source_before(db, vault_path_prefix, node_id, at_ms)?;
-    write_restored_file(vault_fs, config, &source_path, local_dest).await
-}
-
 pub fn resolve_restore_source_before(
     db: &Db,
     vault_path_prefix: &str,

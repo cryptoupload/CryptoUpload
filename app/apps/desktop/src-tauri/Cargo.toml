@@ -5,6 +5,9 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
 publish.workspace = true
 
 [lib]
@@ -31,6 +34,6 @@ tauri-plugin-notification = "=2.4.0"
 tauri-plugin-opener = "=2.5.4"
 tauri-plugin-single-instance = "=2.4.5"
 tauri-plugin-updater = { version = "=2.11.0", default-features = false, features = ["rustls-tls", "system-proxy"] }
-tokio = { version = "=1.53.1", default-features = false, features = ["sync", "rt", "time"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["sync", "rt", "time"] }
 zeroize = "=1.9.0"
 

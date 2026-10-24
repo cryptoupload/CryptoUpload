@@ -2,13 +2,24 @@
 
 CryptoUpload is in public beta and under active development. Before opening a substantial pull
 request, open an issue to discuss it — especially if it touches `cu-crypto` or `cu-format`, the
-crates that need the most careful review. A proposal that goes against an established design
-decision needs a new, concrete reason.
+crates that need the most careful review. A proposal that changes how an existing part works
+should explain the concrete problem it solves.
+
+## How a contribution gets in
+
+Every pull request is read by hand by the maintainer, and nothing enters the project
+automatically: an accepted change is included in the next release, and the CI of an outside
+contributor only runs after the maintainer approves it.
+Releases are built by the project's CI only from a version tag that the maintainer creates, and
+only the official release is signed with the project's update key. A fork can build the same
+code, but its builds are not signed by the project and the app's updater refuses them.
 
 ## DCO, not a CLA
 
 The project uses the **Developer Certificate of Origin**. You do not transfer any right: you
-only certify that you are allowed to contribute your code under the project licence.
+only certify that you are allowed to contribute your code under the project licence: the GPLv3
+([LICENSE](LICENSE)) together with its additional permission for app stores
+([LICENSE-EXCEPTION.txt](LICENSE-EXCEPTION.txt)).
 
 Every commit needs a `Signed-off-by` line with a name and an email address you can be reached
 at. Git adds it for you:
@@ -91,9 +102,10 @@ checks that every commit has its `Signed-off-by` line.
 
 ## Translations
 
-The desktop app speaks the languages listed in `app/apps/desktop/src/lib/i18n/codes.json`. English
-is the reference; every other language is one file in `app/apps/desktop/src/lib/i18n/locales/`
-with exactly the same keys. A language is offered in the app as soon as its file exists.
+The desktop app is available in every language that has a file in
+`app/apps/desktop/src/lib/i18n/locales/`, with exactly the same keys as the English one, which is
+the reference. `app/apps/desktop/src/lib/i18n/codes.json` lists the languages a new file can be
+added for; a language is offered in the app as soon as its file exists.
 
 **Fixing a text does not need any code.** In the app, next to the language menu, open *Help
 translate*: you see each English text with a box for your language, you can try your edits live

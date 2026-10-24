@@ -7,6 +7,44 @@ you. The goal is an independent external audit, based
 on a working beta and the open
 [Unified Vault Format](https://github.com/encryption-alliance/unified-vault-format).
 
+## Check a download
+
+Official installers come only from the
+[Releases page](https://github.com/cryptoupload/CryptoUpload/releases) of this repository. They
+are built by the project's CI from the published code, and each one has a `.sig` file next to it:
+a signature made with the project's update key. The app's updater checks every update against
+the same public key and refuses anything not signed with it. Anyone can build the code, but a
+build from a fork or from another site is not signed by the project.
+
+The public key is:
+
+```
+RWTt1I9t8dl/wTIsTZ/5C67P1M+ovIJbJfS1drkJRVnbYXplgUPLRQvb
+```
+
+To check a file by hand with [minisign](https://jedisct1.github.io/minisign/), download it with
+its `.sig` (the one with the version in its name; the examples use 0.1.0-beta.2), then on Linux:
+
+```bash
+base64 -d CryptoUpload_0.1.0-beta.2_amd64.deb.sig > file.minisig
+minisign -V -P RWTt1I9t8dl/wTIsTZ/5C67P1M+ovIJbJfS1drkJRVnbYXplgUPLRQvb \
+  -m CryptoUpload_0.1.0-beta.2_amd64.deb -x file.minisig
+```
+
+On Windows, in PowerShell:
+
+```powershell
+[IO.File]::WriteAllBytes("$PWD\file.minisig", [Convert]::FromBase64String((Get-Content CryptoUpload_0.1.0-beta.2_x64-setup.exe.sig)))
+minisign -V -P RWTt1I9t8dl/wTIsTZ/5C67P1M+ovIJbJfS1drkJRVnbYXplgUPLRQvb -m CryptoUpload_0.1.0-beta.2_x64-setup.exe -x file.minisig
+```
+
+The copies without the version in their name (`CryptoUpload-windows-setup.exe`,
+`CryptoUpload-linux-amd64.deb`, `CryptoUpload-linux-amd64.AppImage`) are the same files: check them
+with the `.sig` of the copy with the version.
+
+`Signature and comment signature verified` means the file is exactly the one the project
+published. Any other result: do not install it, and report it to security@cryptoupload.org.
+
 ## Reporting a vulnerability
 
 **Do not open a public issue for a vulnerability.** Use one of these private channels:

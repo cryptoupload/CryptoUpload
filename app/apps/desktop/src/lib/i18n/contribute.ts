@@ -61,7 +61,7 @@ export function mailtoUrl(c: Contribution): string {
 		`Language: ${c.language}`,
 		`Native speaker: ${c.nativeSpeaker ? 'yes' : 'no'}`,
 		`Credit: ${c.credit || '-'}`,
-		`Licence (GNU GPLv3) accepted: ${c.licenceAccepted ? 'yes' : 'no'}`,
+		`Licence (GNU GPLv3 with the app store exception) accepted: ${c.licenceAccepted ? 'yes' : 'no'}`,
 		'',
 	];
 	const lines = c.edits.flatMap((e) => [e.key, `  was: ${e.from || '-'}`, `  now: ${e.to}`, '']);

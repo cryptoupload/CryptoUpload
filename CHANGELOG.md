@@ -4,7 +4,43 @@ All changes that matter to users are recorded here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) — versioning:
 [Semantic Versioning](https://semver.org/).
 
-## [0.1.0-beta.1] — first public release
+## [0.1.0-beta.2]
+
+### Added
+
+- **Licence texts installed with the app**: the GPLv3, its app store exception and the licences
+  of the third-party components (fonts and libraries) are installed in a `licenses` folder next
+  to the program.
+- **Check a download yourself**: [SECURITY.md](SECURITY.md#check-a-download) explains how to
+  verify the signature of an installer with minisign.
+
+### Changed
+
+- **Release signing**: the key that signs updates is used only in a separate, isolated step of the
+  release process, after the installers are built; every signature is checked against the app's
+  public key before the release is published.
+- **Recovery kit preview** is shown in an isolated frame that cannot run scripts.
+- The app identifier is now `org.cryptoupload.desktop`, matching the project's domain.
+- Stricter security policy for the app window (no plugins, no form submissions, no embedding).
+
+### Security
+
+- Dependency updates for published advisories: tokio 1.53.3, rustls-webpki 0.103.16,
+  webpki-roots 1.0.11 (distrusted emSign certificates), crypto-bigint 0.7.6 and ctutils 0.4.5
+  (constant-time fixes).
+
+### Fixed
+
+- **Linux, recent distributions (Ubuntu 26.04 and similar):** the `.deb` did not start, because
+  it needed an older FUSE library (`libfuse3.so.3`) that these systems no longer ship; the
+  virtual drive now only needs the `fuse3` package. The `.AppImage` opened an empty window,
+  because the Wayland libraries packed inside it did not match the system's graphics drivers;
+  it now uses the system's own.
+- Closing the app right after Google Drive or OneDrive renewed its access could lose the renewed
+  access, so the remote had to be signed in again.
+- Italian: clearer texts about the proxy setting, key rotation and the recovery phrase.
+
+## [0.1.0-beta.1]
 
 A complete first version for the main use: encrypt on your device, back up to the storage you
 choose, work from a desktop app for Windows and Linux. It has not yet had an independent security

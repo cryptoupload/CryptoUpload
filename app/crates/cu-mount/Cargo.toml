@@ -17,13 +17,13 @@ cu-crypto = { path = "../cu-crypto", version = "0.0.0" }
 cu-format = { path = "../cu-format", version = "0.0.0" }
 cu-vfs = { path = "../cu-vfs", version = "0.0.0" }
 lru = { version = "=0.18.2", default-features = false }
-tokio = { version = "=1.53.1", default-features = false, features = ["rt", "sync", "time"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["rt", "sync", "time"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-fuser = { version = "=0.18.0", default-features = false, features = ["libfuse3"] }
+fuser = { version = "=0.18.0", default-features = false }
 
 [target.'cfg(windows)'.dependencies]
-tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["rt-multi-thread"] }
 winfsp = "=0.13.1"
 winfsp-sys = "=0.12.1"
 widestring = "1"

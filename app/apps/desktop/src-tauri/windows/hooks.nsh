@@ -3,6 +3,8 @@
   ${AndIf} $UpdateMode <> 1
     SetShellVarContext current
     RmDir /r "$APPDATA\cryptoupload"
+    RmDir /r "$APPDATA\io.cryptoupload.desktop"
+    RmDir /r "$LOCALAPPDATA\io.cryptoupload.desktop"
   ${EndIf}
 !macroend
 

@@ -4,11 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release tag to create (e.g. v0.1.0-beta.2) — a manual dispatch has no tag push to take it from'
-        required: true
 
 permissions:
   contents: read
@@ -16,20 +11,31 @@ permissions:
 jobs:
   build:
     permissions:
-      contents: write
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-22.04
             bundles: deb,appimage
+            artifact: bundles-linux
+            files: |
+              app/target/release/bundle/deb/CryptoUpload_*_amd64.deb
+              app/target/release/bundle/appimage/CryptoUpload_*_amd64.AppImage
           - os: windows-latest
             bundles: nsis
+            artifact: bundles-windows
+            files: |
+              app/target/release/bundle/nsis/CryptoUpload_*_x64-setup.exe
 
     runs-on: ${{ matrix.os }}
+    outputs:
+      tauri_cli: ${{ steps.cli.outputs.version }}
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
@@ -53,7 +59,6 @@ jobs:
             librsvg2-dev \
             libayatana-appindicator3-dev \
             pkg-config \
-            libfuse3-dev \
             libudev-dev \
             fuse3 \
             patchelf \
@@ -72,84 +77,167 @@ jobs:
         run: npm ci
         working-directory: app/apps/desktop
 
-      - uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0.6.2
+      - name: Read the Tauri CLI version
+        id: cli
+        shell: bash
+        working-directory: app/apps/desktop
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@tauri-apps/cli'].version")" >> "$GITHUB_OUTPUT"
+
+      - name: Write the third-party licence notices
+        shell: bash
+        working-directory: app/apps/desktop
+        run: |
+          cargo install --locked cargo-about@0.9.2 --features cli
+          node tools/third-party-notices.mjs
+          [ "$(wc -c < src-tauri/THIRD-PARTY-NOTICES.txt)" -gt 100000 ] || { echo "::error::third-party notices look incomplete"; exit 1; }
+
+      - name: Build the installers
+        working-directory: app/apps/desktop
+        run: npx tauri build --ci --bundles ${{ matrix.bundles }} --config src-tauri/tauri.licenses.conf.json
+
+      - name: Use the system Wayland libraries in the AppImage
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: app/target/release/bundle/appimage
+        run: |
+          set -euo pipefail
+          image=$(ls CryptoUpload_*_amd64.AppImage)
+          tool="$HOME/.cache/tauri/linuxdeploy-plugin-appimage.AppImage"
+          [ -x "$tool" ] || { echo "::error::$tool not found"; exit 1; }
+          rm -rf squashfs-root
+          "./$image" --appimage-extract >/dev/null
+          rm -f squashfs-root/usr/lib/libwayland-*.so*
+          if ls squashfs-root/usr/lib/libwayland-* >/dev/null 2>&1; then echo "::error::libwayland still bundled"; exit 1; fi
+          rm "$image"
+          ARCH=x86_64 LDAI_OUTPUT="$image" "$tool" --appimage-extract-and-run --appdir squashfs-root
+          rm -rf squashfs-root
+          "./$image" --appimage-extract >/dev/null
+          if ls squashfs-root/usr/lib/libwayland-* >/dev/null 2>&1; then echo "::error::repacked AppImage still bundles libwayland"; exit 1; fi
+          rm -rf squashfs-root
+          ls -l "$image"
+
+      - name: Collect the installers
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILES: ${{ matrix.files }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          for f in $FILES; do cp "$f" dist/; done
+          ls -l dist
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/*
+          if-no-files-found: error
+
+  sign:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: bundles-*
+          merge-multiple: true
+          path: bundles
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Install the Tauri CLI only
+        env:
+          TAURI_CLI: ${{ needs.build.outputs.tauri_cli }}
+        run: |
+          set -euo pipefail
+          [[ "$TAURI_CLI" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::bad Tauri CLI version '$TAURI_CLI'"; exit 1; }
+          npm install --prefix "$RUNNER_TEMP/signer" --ignore-scripts --no-audit --no-fund "@tauri-apps/cli@${TAURI_CLI}"
+
+      - name: Sign the installers for the updater
+        env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          projectPath: app/apps/desktop
-          tagName: ${{ github.event.inputs.tag || github.ref_name }}
-          releaseName: 'CryptoUpload ${{ github.event.inputs.tag || github.ref_name }}'
-          releaseBody: |
-            See [CHANGELOG.md](https://github.com/cryptoupload/CryptoUpload/blob/main/CHANGELOG.md) for details.
+        run: |
+          set -euo pipefail
+          [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || { echo "::error::missing secret TAURI_SIGNING_PRIVATE_KEY"; exit 1; }
+          shopt -s nullglob
+          files=(bundles/*.deb bundles/*.AppImage bundles/*.exe)
+          [ "${#files[@]}" -eq 3 ] || { echo "::error::expected 3 installers, found ${#files[@]}"; exit 1; }
+          for f in "${files[@]}"; do
+            "$RUNNER_TEMP/signer/node_modules/.bin/tauri" signer sign "$f" > /dev/null
+            [ -s "$f.sig" ] || { echo "::error::no signature for $f"; exit 1; }
+          done
+          ls -l bundles
 
-            > ⚠️ **Unsigned beta:** on Windows, SmartScreen warns on first launch — click "More info → Run anyway".
-          releaseDraft: true
-          args: --bundles ${{ matrix.bundles }} --config src-tauri/tauri.release.conf.json
-
-      - name: Save Linux updater signature
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: sig-linux
-          path: |
-            app/target/release/bundle/appimage/CryptoUpload_*_amd64.AppImage.sig
-            app/target/release/bundle/deb/CryptoUpload_*_amd64.deb.sig
+          name: signatures
+          path: bundles/*.sig
           if-no-files-found: error
 
-      - name: Save Windows updater signature
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: sig-windows
-          path: app/target/release/bundle/nsis/CryptoUpload_*_x64-setup.exe.sig
-          if-no-files-found: error
-
-  generate-updater-json:
-    needs: build
+  publish:
+    needs: [build, sign]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
-      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      RELEASE_TAG: ${{ github.ref_name }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - name: Download all signatures
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          pattern: sig-*
-          merge-multiple: false
-          path: sigs
+          persist-credentials: false
+          sparse-checkout: app/apps/desktop/src-tauri/tauri.conf.json
+          sparse-checkout-cone-mode: false
 
-      - name: Generate and upload latest.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: '{bundles-*,signatures}'
+          merge-multiple: true
+          path: out
+
+      - name: Verify every signature with the app's public key
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq minisign
+          jq -r '.plugins.updater.pubkey' app/apps/desktop/src-tauri/tauri.conf.json | base64 -d > updater.pub
+          VERSION="${RELEASE_TAG#v}"
+          for f in "CryptoUpload_${VERSION}_amd64.deb" "CryptoUpload_${VERSION}_amd64.AppImage" "CryptoUpload_${VERSION}_x64-setup.exe"; do
+            [ -s "out/$f" ] && [ -s "out/$f.sig" ] || { echo "::error::missing out/$f or its signature"; exit 1; }
+            base64 -d "out/$f.sig" > "out/$f.minisig"
+            minisign -V -q -p updater.pub -m "out/$f" -x "out/$f.minisig"
+            rm "out/$f.minisig"
+          done
+
+      - name: Prepare the release files
         shell: bash
         run: |
           set -euo pipefail
           TAG="${RELEASE_TAG}"
           VERSION="${TAG#v}"
           BASE_URL="https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}"
+          cd out
 
-          sig() {
-            local f
-            f=$(find sigs -name "$1" | head -1)
-            [ -n "$f" ] && [ -s "$f" ] || { echo "::error::missing updater signature $1"; exit 1; }
-            cat "$f"
-          }
-          APPIMAGE_SIG=$(sig "CryptoUpload_*_amd64.AppImage.sig")
-          DEB_SIG=$(sig "CryptoUpload_*_amd64.deb.sig")
-          WINDOWS_SIG=$(sig "CryptoUpload_*_x64-setup.exe.sig")
+          cp "CryptoUpload_${VERSION}_x64-setup.exe" CryptoUpload-windows-setup.exe
+          cp "CryptoUpload_${VERSION}_amd64.deb" CryptoUpload-linux-amd64.deb
+          cp "CryptoUpload_${VERSION}_amd64.AppImage" CryptoUpload-linux-amd64.AppImage
+          sha256sum CryptoUpload*.exe CryptoUpload*.deb CryptoUpload*.AppImage > SHA256SUMS.txt
+          cat SHA256SUMS.txt
 
           jq -n \
             --arg version  "$VERSION" \
             --arg pub_date "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
-            --arg appimage_sig "$APPIMAGE_SIG" \
+            --arg appimage_sig "$(cat "CryptoUpload_${VERSION}_amd64.AppImage.sig")" \
             --arg appimage_url "${BASE_URL}/CryptoUpload_${VERSION}_amd64.AppImage" \
-            --arg deb_sig      "$DEB_SIG" \
+            --arg deb_sig      "$(cat "CryptoUpload_${VERSION}_amd64.deb.sig")" \
             --arg deb_url      "${BASE_URL}/CryptoUpload_${VERSION}_amd64.deb" \
-            --arg windows_sig  "$WINDOWS_SIG" \
+            --arg windows_sig  "$(cat "CryptoUpload_${VERSION}_x64-setup.exe.sig")" \
             --arg windows_url  "${BASE_URL}/CryptoUpload_${VERSION}_x64-setup.exe" \
             '{
               version: $version,
@@ -163,46 +251,24 @@ jobs:
                 "windows-x86_64-nsis":   {signature: $windows_sig,  url: $windows_url}
               }
             }' > latest.json
-
-          echo "=== latest.json ==="
           cat latest.json
 
-          gh release upload "${TAG}" latest.json --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload installers under version-free names
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="${RELEASE_TAG}"
-          VERSION="${TAG#v}"
-          mkdir fixed && cd fixed
-          gh release download "${TAG}" \
-            --pattern "CryptoUpload_${VERSION}_x64-setup.exe" \
-            --pattern "CryptoUpload_${VERSION}_amd64.deb" \
-            --pattern "CryptoUpload_${VERSION}_amd64.AppImage"
-          mv "CryptoUpload_${VERSION}_x64-setup.exe" CryptoUpload-windows-setup.exe
-          mv "CryptoUpload_${VERSION}_amd64.deb" CryptoUpload-linux-amd64.deb
-          mv "CryptoUpload_${VERSION}_amd64.AppImage" CryptoUpload-linux-amd64.AppImage
-          gh release upload "${TAG}" CryptoUpload-windows-setup.exe CryptoUpload-linux-amd64.deb CryptoUpload-linux-amd64.AppImage --clobber
-
-      - name: Upload SHA-256 checksums
+      - name: Create the draft release and upload the files
         shell: bash
         run: |
           set -euo pipefail
           TAG="${RELEASE_TAG}"
-          VERSION="${TAG#v}"
-          mkdir sums && cd sums
-          gh release download "${TAG}" \
-            --pattern "CryptoUpload_${VERSION}_x64-setup.exe" \
-            --pattern "CryptoUpload_${VERSION}_amd64.deb" \
-            --pattern "CryptoUpload_${VERSION}_amd64.AppImage"
-          cp "CryptoUpload_${VERSION}_x64-setup.exe" CryptoUpload-windows-setup.exe
-          cp "CryptoUpload_${VERSION}_amd64.deb" CryptoUpload-linux-amd64.deb
-          cp "CryptoUpload_${VERSION}_amd64.AppImage" CryptoUpload-linux-amd64.AppImage
-          sha256sum CryptoUpload* > SHA256SUMS.txt
-          cat SHA256SUMS.txt
-          gh release upload "${TAG}" SHA256SUMS.txt --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "::error::'$TAG' is not a version tag"; exit 1; }
+          NOTES=$'See [CHANGELOG.md](https://github.com/cryptoupload/CryptoUpload/blob/main/CHANGELOG.md) for details.\n\nEach installer has a `.sig` signature next to it; [SECURITY.md](https://github.com/cryptoupload/CryptoUpload/blob/main/SECURITY.md#check-a-download) explains how to check it.\n\n> ⚠️ **Unsigned beta:** on Windows, SmartScreen warns on first launch — click "More info → Run anyway".'
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = true ] || { echo "::error::release $TAG is already published"; exit 1; }
+          else
+            gh release create "$TAG" --draft --target "$GITHUB_SHA" --title "CryptoUpload ${TAG}" --notes "$NOTES"
+          fi
+          cd out
+          gh release upload "$TAG" --clobber \
+            CryptoUpload_*_x64-setup.exe CryptoUpload_*_x64-setup.exe.sig \
+            CryptoUpload_*_amd64.deb CryptoUpload_*_amd64.deb.sig \
+            CryptoUpload_*_amd64.AppImage CryptoUpload_*_amd64.AppImage.sig \
+            CryptoUpload-windows-setup.exe CryptoUpload-linux-amd64.deb CryptoUpload-linux-amd64.AppImage \
+            SHA256SUMS.txt latest.json

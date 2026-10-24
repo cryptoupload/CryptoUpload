@@ -217,11 +217,6 @@ impl Registrar {
         }
     }
 
-    #[must_use]
-    pub fn pending_confirmations(&self) -> usize {
-        self.confirms.lock().expect("mutex poisoned").len()
-    }
-
     pub async fn flush(&self) -> Result<(), Msg> {
         let mut core = self.core.lock().await;
         let ops = std::mem::take(&mut *self.confirms.lock().expect("mutex poisoned"));

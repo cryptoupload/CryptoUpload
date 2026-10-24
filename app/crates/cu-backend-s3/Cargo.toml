@@ -23,7 +23,7 @@ aws-smithy-runtime-api = { version = "=1.9.2", features = ["client"] }
 bytes = "1"
 cu-backend = { path = "../cu-backend", version = "0.0.0" }
 crc32c = "=0.6.8"
-tokio = { version = "=1.53.1", default-features = false, features = [
+tokio = { version = "=1.53.3", default-features = false, features = [
     "time",
     "sync",
 ] }

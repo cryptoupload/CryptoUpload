@@ -180,14 +180,6 @@ impl ActivityLog {
         let _ = std::fs::remove_dir_all(data_dir.join("cryptoupload").join("activity"));
     }
 
-    #[must_use]
-    pub fn at_path(path: PathBuf) -> Self {
-        Self {
-            path,
-            access: LocalStateAccess::plain(),
-        }
-    }
-
     pub fn record(&self, activity: Activity) {
         let _ = self.try_record(now_unix(), activity);
     }

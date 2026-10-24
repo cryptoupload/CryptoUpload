@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "resources": {
+      "THIRD-PARTY-NOTICES.txt": "licenses/THIRD-PARTY-NOTICES.txt"
+    }
+  }
+}

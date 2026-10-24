@@ -35,7 +35,7 @@ data-encoding = { version = "=2.11.1", default-features = false, features = ["al
 serde = { version = "=1.0.229", features = ["derive"] }
 region = "=3.0.2"
 serde_json = "=1.0.151"
-tokio = { version = "=1.53.1", default-features = false, features = ["fs", "io-util", "rt", "rt-multi-thread"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["fs", "io-util", "rt", "rt-multi-thread"] }
 zeroize = { version = "1", default-features = false, features = ["alloc"] }
 
 [target.'cfg(unix)'.dependencies]

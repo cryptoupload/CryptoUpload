@@ -17,5 +17,5 @@ cu-backend = { path = "../cu-backend", version = "0.0.0" }
 cu-oauth = { path = "../cu-oauth", version = "0.0.0" }
 reqwest = { version = "=0.12.28", default-features = false, features = ["json", "rustls-tls", "stream", "socks"] }
 serde_json = { version = "=1.0.151" }
-tokio = { version = "=1.53.1", default-features = false, features = ["sync", "time"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["sync", "time"] }
 

@@ -27,24 +27,6 @@ impl KdfParams {
     }
 
     #[must_use]
-    pub const fn interactive() -> Self {
-        Self {
-            m_cost_kib: 64 * 1024,
-            t_cost: 3,
-            p_cost: 4,
-        }
-    }
-
-    #[must_use]
-    pub const fn paranoid() -> Self {
-        Self {
-            m_cost_kib: 1024 * 1024,
-            t_cost: 6,
-            p_cost: 4,
-        }
-    }
-
-    #[must_use]
     pub const fn new(m_cost_kib: u32, t_cost: u32, p_cost: u32) -> Self {
         Self {
             m_cost_kib,

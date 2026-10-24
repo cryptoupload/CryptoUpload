@@ -5,8 +5,8 @@ title: ""
 labels: enhancement
 ---
 
-**Before opening this issue:** a proposal that goes against an established design decision needs
-a new, concrete reason — see `CONTRIBUTING.md`.
+**Before opening this issue:** a proposal that changes how an existing part works should explain
+the concrete problem it solves — see `CONTRIBUTING.md`.
 
 ## Problem it solves
 

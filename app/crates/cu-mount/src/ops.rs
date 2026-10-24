@@ -135,11 +135,6 @@ impl VfsOps {
         })
     }
 
-    #[must_use]
-    pub fn cache_stats(&self) -> (u64, u64) {
-        (self.cache.hits(), self.cache.misses())
-    }
-
     pub async fn lookup(&self, parent: Ino, name: &str) -> Result<(Ino, Attr), OpError> {
         if parent == ROOT_INO && name == crate::write::RESERVED_DIR {
             return Err(OpError::NotFound);
@@ -529,13 +524,6 @@ impl VfsOps {
                 ops.run(&reader, group_start, group_end).await;
             }));
             group_start = group_end;
-        }
-    }
-
-    pub async fn wait_for_background_prefetch(&self) {
-        let tasks = std::mem::take(&mut *self.prefetch_tasks.lock().unwrap());
-        for task in tasks {
-            let _ = task.await;
         }
     }
 }

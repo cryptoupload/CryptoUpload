@@ -130,43 +130,6 @@ impl CircuitBreaker {
     }
 }
 
-pub struct TokenBucket {
-    capacity: f64,
-    refill_per_ms: f64,
-    state: Mutex<(f64, i64)>,
-}
-
-impl TokenBucket {
-    #[must_use]
-    pub fn new(capacity: u32, refill_per_sec: u32, now_ms: i64) -> Self {
-        Self {
-            capacity: f64::from(capacity),
-            refill_per_ms: f64::from(refill_per_sec) / 1000.0,
-            state: Mutex::new((f64::from(capacity), now_ms)),
-        }
-    }
-
-    pub fn try_take(&self, now_ms: i64) -> Result<(), u64> {
-        let mut guard = self.state.lock().unwrap();
-        let (tokens, last_ms) = &mut *guard;
-        let elapsed = (now_ms - *last_ms).max(0);
-        #[allow(clippy::cast_precision_loss)]
-        let refilled = (*tokens + elapsed as f64 * self.refill_per_ms).min(self.capacity);
-        *tokens = refilled;
-        *last_ms = now_ms;
-        if *tokens >= 1.0 {
-            *tokens -= 1.0;
-            Ok(())
-        } else if self.refill_per_ms > 0.0 {
-            #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-            let wait = ((1.0 - *tokens) / self.refill_per_ms).ceil() as u64;
-            Err(wait.max(1))
-        } else {
-            Err(u64::MAX)
-        }
-    }
-}
-
 pub struct RetryFailure {
     pub error: BackendError,
     pub retry_after_ms: Option<u64>,

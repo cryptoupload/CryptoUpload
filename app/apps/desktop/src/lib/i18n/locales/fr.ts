@@ -1456,7 +1456,7 @@ export const fr: Dict = {
 		credit: 'Nom à créditer (facultatif)',
 		contact: 'Votre e-mail (facultatif, seulement si vous souhaitez une réponse)',
 		native: 'Cette langue est ma langue maternelle',
-		licence: 'J’accepte que mes modifications soient publiées dans le projet, sous la licence du projet (GNU GPLv3)',
+		licence: 'J’accepte que mes modifications soient publiées dans le projet, sous la licence du projet (GNU GPLv3 avec son exception pour les boutiques d’applications)',
 		saveFile: 'Enregistrer le fichier',
 		writeEmail: 'Écrire l’e-mail',
 		discard: 'Abandonner mes modifications',

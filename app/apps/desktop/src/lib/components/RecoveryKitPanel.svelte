@@ -87,6 +87,7 @@
 				title={i18n.t.recoveryKit.title}
 				bind:this={iframeEl}
 				class="cu-kit-frame"
+				sandbox="allow-same-origin allow-modals"
 			></iframe>
 		</div>
 	</div>

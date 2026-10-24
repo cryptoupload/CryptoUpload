@@ -54,6 +54,8 @@ Free and open source (GPLv3) · Windows and Linux desktop app ·
 Download the installer for your system from the
 [Releases page](https://github.com/cryptoupload/CryptoUpload/releases) and check its SHA-256
 against the one GitHub shows next to the file, or against `SHA256SUMS.txt` in the same release.
+Each installer is also signed with the project's key: [how to check it](SECURITY.md#check-a-download).
+Builds published anywhere else, forks included, are not signed by the project.
 
 | System | Package |
 |---|---|
@@ -80,7 +82,7 @@ cd apps/desktop && npm ci && npx tauri build   # desktop app
 
 Rust stable and Node.js are required. On Linux the build also needs these system packages:
 `libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev libgtk-3-dev librsvg2-dev
-libayatana-appindicator3-dev pkg-config libfuse3-dev`.
+libayatana-appindicator3-dev pkg-config libudev-dev`.
 
 ## Known limitations
 
@@ -98,6 +100,9 @@ libayatana-appindicator3-dev pkg-config libfuse3-dev`.
   virtual drive mounted, closing the window quits the program. On GNOME the notification-area
   icon needs the AppIndicator extension.
 - **Linux virtual drive**: files are never executable; copy a program out of the drive to run it.
+- **Conflict copies carry the computer's name** (the name set in the system, for example
+  `report (conflict LAPTOP 2030-01-15 09.15.00 UTC).pdf`). The name stays inside the encrypted vault: the storage
+  provider never sees it, but the other members of a shared vault do.
 - **Translations**: English is the reference; the other languages are drafts awaiting review by
   a native speaker, and the app says so.
 

@@ -28,6 +28,9 @@ members = [
 
 [workspace.package]
 version = "0.0.0"
+authors = ["CryptoUpload"]
+repository = "https://github.com/cryptoupload/CryptoUpload"
+homepage = "https://cryptoupload.org"
 edition = "2024"
 rust-version = "1.89"
 license = "GPL-3.0-or-later"

@@ -1456,7 +1456,7 @@ export const en = {
 		credit: 'Name to credit (optional)',
 		contact: 'Your email (optional, only if you want an answer)',
 		native: 'I am a native speaker of this language',
-		licence: 'I agree that my changes can be published in the project, under the project’s licence (GNU GPLv3)',
+		licence: 'I agree that my changes can be published in the project, under the project’s licence (GNU GPLv3 with its app store exception)',
 		saveFile: 'Save the file',
 		writeEmail: 'Write the email',
 		discard: 'Discard my edits',

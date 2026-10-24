@@ -199,29 +199,6 @@ impl SyncJob {
         Ok(())
     }
 
-    pub async fn restore_before(
-        &mut self,
-        vault_path: &str,
-        at_ms: i64,
-        local_dest: &Path,
-    ) -> Result<(), CoreError> {
-        let node_id = self.resolve_node_id(vault_path)?;
-        let source_path = restore::resolve_restore_source_before(
-            self.db(),
-            self.engine.vault_path(),
-            node_id,
-            at_ms,
-        )?;
-        restore::write_restored_file(
-            self.vault.fs(),
-            self.vault.config(),
-            &source_path,
-            local_dest,
-        )
-        .await?;
-        Ok(())
-    }
-
     pub async fn verify_existence(&self) -> Result<Vec<VerifyIssue>, CoreError> {
         Ok(verify::verify_existence(
             self.db(),

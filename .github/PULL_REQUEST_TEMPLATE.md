@@ -3,7 +3,7 @@
 ## Checklist
 
 - [ ] Every commit has `Signed-off-by` (`git commit -s`) — DCO, not a CLA
-- [ ] `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings` and
+- [ ] `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D warnings` and
       `cargo deny check` pass locally
 - [ ] If this touches the vault format (`cu-crypto`/`cu-format`): it was discussed in an issue first
 - [ ] If this touches `cu-format`: truncation is still detected at every chunk boundary

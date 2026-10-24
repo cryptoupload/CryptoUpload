@@ -17,5 +17,5 @@ cu-backend = { path = "../cu-backend", version = "0.0.0" }
 cu-crypto = { path = "../cu-crypto", version = "0.0.0" }
 cu-format = { path = "../cu-format", version = "0.0.0" }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
-tokio = { version = "=1.53.1", default-features = false, features = ["io-util"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["io-util"] }
 
