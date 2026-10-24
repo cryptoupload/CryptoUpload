@@ -29,6 +29,7 @@ jobs:
               app/target/release/bundle/nsis/CryptoUpload_*_x64-setup.exe
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
     outputs:
       tauri_cli: ${{ steps.cli.outputs.version }}
 
@@ -135,6 +136,7 @@ jobs:
   sign:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: release
     permissions: {}
     steps:
@@ -181,6 +183,7 @@ jobs:
   publish:
     needs: [build, sign]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write
     env:
@@ -261,6 +264,8 @@ jobs:
           DEB="CryptoUpload_${VERSION}_amd64.deb"
           APPIMAGE="CryptoUpload_${VERSION}_amd64.AppImage"
           NOTES=$(cat <<EOF
+          CryptoUpload encrypts your files on your computer before they reach Google Drive, S3, a NAS, WebDAV or SFTP.
+          New here? Start with the [five-minute guide](https://github.com/cryptoupload/CryptoUpload#five-minute-start).
 
           | Your computer | File to download | Downloads (updated hourly) |
           |---|---|---|
@@ -268,11 +273,14 @@ jobs:
           | Ubuntu, Debian, Linux Mint | [\`${DEB}\`](https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}/${DEB}) | — |
           | Any other Linux | [\`${APPIMAGE}\`](https://github.com/cryptoupload/CryptoUpload/releases/download/${TAG}/${APPIMAGE}) | — |
 
+          **All versions:** — downloads
+
           You need only one file. The others are not installers: each \`.sig\` and \`SHA256SUMS.txt\` let
           you check that a download is genuine ([SECURITY.md](https://github.com/cryptoupload/CryptoUpload/blob/main/SECURITY.md#check-a-download)),
           \`latest.json\` is read by the app to find updates, and "Source code" is the program's source.
 
-          > ⚠️ **Unsigned beta:** on Windows, SmartScreen warns on first launch — click "More info → Run anyway".
+          > ⚠️ **Windows SmartScreen:** the beta installer has no paid code-signing certificate yet, so Windows warns on
+          > first launch — click "More info → Run anyway". Every file is still signed with the project's own key (the \`.sig\` files).
 
           What changed: [CHANGELOG.md](https://github.com/cryptoupload/CryptoUpload/blob/main/CHANGELOG.md).
           EOF

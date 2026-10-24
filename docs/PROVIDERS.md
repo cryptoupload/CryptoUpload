@@ -18,8 +18,8 @@ optionally unlocked through the system keychain.
 | OneDrive | Your own app registration (free) | Experimental |
 
 Why "your own" OAuth client? CryptoUpload has no server and no company account sitting between
-you and your provider. You register a free application in your own account, so nobody else can
-ever revoke, throttle or observe your access.
+you and your provider. You register a free application in your own account, so your access
+depends only on you and your provider.
 
 After any of the sections below, you can verify the connection end to end: create a vault on the
 remote, add a file, lock the vault, open it again and check that the file opens.
@@ -86,10 +86,13 @@ Register a free "Desktop app" OAuth client once:
    **Desktop app**. This type is required: it is the only one that allows a redirect to any port
    on `127.0.0.1`.
 5. Copy the **Client ID** and **Client secret**.
+6. Back in **OAuth consent screen**, choose **Publish app** so its status becomes *In production*.
+   While an app is in *Testing*, Google ends its connections after 7 days and you would have to
+   connect again every week.
 
 In **Remotes → Add remote**, choose Google Drive, paste the two values and follow the browser
-window that opens to grant consent (an "unverified app" notice is normal for an app in test
-mode). Revoking access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions)
+window that opens to grant consent (an "unverified app" notice is normal for an app you registered
+yourself). Revoking access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions)
 and adding the remote again restores a clean connection.
 
 ## Dropbox

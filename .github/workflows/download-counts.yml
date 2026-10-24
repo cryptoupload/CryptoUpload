@@ -11,6 +11,8 @@ permissions:
 jobs:
   counts:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.repository == 'cryptoupload/CryptoUpload'
     permissions:
       contents: write
     env:
@@ -21,31 +23,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for tag in $(gh release list --exclude-drafts --limit 100 --json tagName --jq '.[].tagName'); do
-            gh release view "$tag" --json body,assets > release.json
-            python3 - <<'EOF'
+          gh api "repos/${GH_REPO}/releases?per_page=100" > releases.json
+          python3 - <<'EOF'
           import json
           import re
 
-          release = json.load(open("release.json"))
-          counts = {a["name"]: a["downloadCount"] for a in release["assets"]}
-          lines = release["body"].replace("\r\n", "\n").split("\n")
-          out = []
-          for line in lines:
-              cells = line.split("|")
-              name = re.search(r"\[`([^`]+)`\]", cells[2]) if len(cells) == 5 else None
-              if name and name.group(1) in counts:
-                  cells[3] = f" {counts[name.group(1)]:,} "
-                  line = "|".join(cells)
-              out.append(line)
-          body = "\n".join(out)
-          open("body.md", "w").write(body)
-          open("changed", "w").write("1" if body != "\n".join(lines) else "0")
+          releases = [r for r in json.load(open("releases.json")) if not r["draft"]]
+          installer = re.compile(r"\.(exe|deb|AppImage)$")
+          total = sum(a["download_count"] for r in releases for a in r["assets"] if installer.search(a["name"]))
+          for r in releases:
+              counts = {a["name"]: a["download_count"] for a in r["assets"]}
+              lines = (r["body"] or "").replace("\r\n", "\n").split("\n")
+              out = []
+              for line in lines:
+                  cells = line.split("|")
+                  name = re.search(r"\[`([^`]+)`\]", cells[2]) if len(cells) == 5 else None
+                  if name and name.group(1) in counts:
+                      cells[3] = f" {counts[name.group(1)]:,} "
+                      line = "|".join(cells)
+                  elif line.startswith("**All versions:**"):
+                      line = f"**All versions:** {total:,} downloads"
+                  out.append(line)
+              body = "\n".join(out)
+              if body != "\n".join(lines):
+                  open(f"body-{r['tag_name']}.md", "w").write(body)
+          print(f"total: {total}")
           EOF
-            if [ "$(cat changed)" = 1 ]; then
-              gh release edit "$tag" --notes-file body.md > /dev/null
-              echo "$tag: updated"
-            else
-              echo "$tag: unchanged"
-            fi
+          for f in body-*.md; do
+            [ -e "$f" ] || continue
+            tag="${f#body-}"; tag="${tag%.md}"
+            gh release edit "$tag" --notes-file "$f" > /dev/null
+            echo "$tag: updated"
           done

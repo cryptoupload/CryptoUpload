@@ -4,6 +4,15 @@ All changes that matter to users are recorded here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) — versioning:
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- **Google Drive guide**: a new last step publishes your OAuth app. While it stays in Google's
+  *Testing* status, Google ends the connection after 7 days and you would have to connect again
+  every week. If you set up Google Drive before, publish the app and connect again once.
+- **README**: screenshots, a direct download link and answers to common questions.
+
 ## [0.1.0-beta.2]
 
 ### Added
